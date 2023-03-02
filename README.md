@@ -10,7 +10,7 @@ O servidor é capaz de hospedar várias partidas simultaneamente, cada uma com d
 
 ## Instalação
 
-Para executar o Chess Socket, você precisará do Python 3.7 ou superior instalado em sua máquina. Além disso, é necessário instalar a biblioteca Pygame para a interface gráfica do cliente.
+Para executar o Chess Socket, você precisará do Python 3.1 ou superior instalado em sua máquina.
 
 1. Clone o repositório do Chess Socket em sua máquina local.
 2. Instale as dependências necessárias, executando o seguinte comando na raiz do projeto:
