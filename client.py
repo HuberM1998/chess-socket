@@ -1,42 +1,41 @@
+# cliente.py
+
 import socket
-import threading
+import pickle
 
-# Define a porta e o endereço do servidor
 HOST = '127.0.0.1'
-PORT = 5000
+PORT = 5002
 
-# Inicializa o socket do cliente
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((HOST, PORT))
+# Cria o socket do cliente
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.connect((HOST, PORT))
 
-# Define a função para receber atualizações do servidor
-def receive_updates():
-    while True:
-        # Recebe os dados do servidor
-        data = client.recv(1024).decode()
-        if not data:
-            print("Servidor desconectado")
-            break
-
-        # Processa os dados recebidos
-        from_square, to_square = data.strip().split(" ")
-        print(f"Oponente moveu de {from_square} para {to_square}")
-
-# Inicia uma nova thread para receber atualizações do servidor
-t = threading.Thread(target=receive_updates)
-t.start()
-
-# Loop principal do cliente
+# Loop principal do jogo
 while True:
-    # Exibe o tabuleiro
-    print("Tabuleiro:")
-    for row in game.board:
-        print(" ".join(row))
-    print(f"Vez das {game.turn}")
+    # Recebe o estado atual do jogo
+    state_data = sock.recv(1024)
+    state = pickle.loads(state_data)
 
-    # Recebe a jogada do jogador
-    from_square = input("De: ")
-    to_square = input("Para: ")
+    # Imprime o estado atual do jogo
+    board = state['board']
+    for row in board:
+        print(' '.join(row))
+    if state['white_to_move']:
+        print("Branco é o próximo a jogar.")
+    else:
+        print("Preto é o próximo a jogar.")
+
+    # Pede a jogada ao usuário
+    while True:
+        try:
+            move_str = input("Digite a jogada (exemplo: e2 e4): ")
+            r1, c1, r2, c2 = move_str.split()
+            r1, c1, r2, c2 = int(r1) - 1, ord(c1) - ord('a'), int(r2) - 1, ord(c2) - ord('a')
+            move = (r1, c1, r2, c2)
+            break
+        except ValueError:
+            print("Jogada inválida.")
 
     # Envia a jogada para o servidor
-    client.send(f"{from_square} {to_square}".encode())
+    move_data = pickle.dumps(move)
+    sock.sendall(move_data)
