@@ -30,9 +30,40 @@ class ChessGame:
         self.turn = "white"
 
     # Verifica se um movimento é válido
-    def is_valid_move(self, from_square, to_square):
-        # Implemente aqui a lógica para verificar se um movimento é válido
-        return True
+def is_valid_move(self, from_square, to_square):
+    # Obtem a peça que será movida e as coordenadas de origem e destino
+    piece = self.board[from_square[0]][from_square[1]]
+    r1, c1 = from_square
+    r2, c2 = to_square
+
+    # Verifica se a peça pertence ao jogador atual
+    if piece.isupper() and self.current_player == 'white' or \
+       piece.islower() and self.current_player == 'black':
+        return False
+
+    # Verifica se o movimento é válido para a peça
+    if piece.lower() == 'p':
+        if self._is_valid_pawn_move(r1, c1, r2, c2):
+            return True
+    elif piece.lower() == 'r':
+        if self._is_valid_rook_move(r1, c1, r2, c2):
+            return True
+    elif piece.lower() == 'n':
+        if self._is_valid_knight_move(r1, c1, r2, c2):
+            return True
+    elif piece.lower() == 'b':
+        if self._is_valid_bishop_move(r1, c1, r2, c2):
+            return True
+    elif piece.lower() == 'q':
+        if self._is_valid_queen_move(r1, c1, r2, c2):
+            return True
+    elif piece.lower() == 'k':
+        if self._is_valid_king_move(r1, c1, r2, c2):
+            return True
+
+    # O movimento não é válido
+    return False
+
 
     # Executa um movimento
     def make_move(self, from_square, to_square):
