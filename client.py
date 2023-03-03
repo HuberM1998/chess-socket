@@ -1,4 +1,4 @@
-# cliente.py
+# client.py
 
 import socket
 import pickle

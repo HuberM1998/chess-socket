@@ -1,7 +1,10 @@
-# servidor.py
+# server.py
 
 import socket
 import pickle
+
+HOST = '127.0.0.1'
+PORT = 5003
 
 # Classe para representar o tabuleiro de xadrez
 class Board:
@@ -28,9 +31,6 @@ class Board:
         # Retorna o estado atual do jogo em formato de dicionário
         return {'board': self.board, 'white_to_move': self.white_to_move}
 
-
-HOST = '127.0.0.1'
-PORT = 5003
 
 # Inicializa o tabuleiro
 board = Board()
