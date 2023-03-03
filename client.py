@@ -4,7 +4,7 @@ import socket
 import pickle
 
 HOST = '127.0.0.1'
-PORT = 5002
+PORT = 5003
 
 # Cria o socket do cliente
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,6 +27,7 @@ while True:
 
     # Pede a jogada ao usuário
     while True:
+        #corrigir
         try:
             move_str = input("Digite a jogada (exemplo: e2 e4): ")
             r1, c1, r2, c2 = move_str.split()
