@@ -30,7 +30,7 @@ class Board:
 
 
 HOST = '127.0.0.1'
-PORT = 5002
+PORT = 5003
 
 # Inicializa o tabuleiro
 board = Board()
