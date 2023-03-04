@@ -6,6 +6,15 @@ import pickle
 HOST = '127.0.0.1'
 PORT = 5003
 
+class Piece:
+    def __init__(self, x, y, token, property):
+        self.x, self.y = x, y
+        self.token = token
+        self.property = property
+
+    def __str__(self):
+        return f'{self.token}'
+
 # Classe para representar o tabuleiro de xadrez
 class Board:
     def __init__(self):
@@ -17,6 +26,15 @@ class Board:
                       ['.', ' ', '.', ' ', '.', ' ', '.', ' '],
                       ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
                       ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
+        
+        for i, v2 in enumerate(self.board):
+            for j, v in enumerate(self.board[i]):
+                if v.isalpha():
+                    if v.isupper():
+                        self.board[i][j] = Piece(x=i, y=j, token=v, property='w')
+                    if v.islower():
+                        self.board[i][j] = Piece(x=i, y=j, token=v, property='b')
+
         self.white_to_move = True
 
     def make_move(self, move):
