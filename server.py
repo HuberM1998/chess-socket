@@ -23,7 +23,6 @@ class Board:
     	
     def update(self,next):
     	self.next = next
-    	pass
     
     def make_move(self, move):
         pass
