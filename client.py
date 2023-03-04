@@ -57,7 +57,7 @@ while True:
             		print("10:Jogada inválida.")
     	elif state['next'] == 'white' and player['pNumber'] == 2:
     		move = (0,0,0,0)
-    		print("Eperando jogador branco jogar.")
+    		print("Eperando jogador white jogar.")
     		break
     
     	if state['next'] == 'black' and player['pNumber'] == 2:
@@ -72,7 +72,7 @@ while True:
             		print("10:Jogada inválida.")
     	elif state['next'] == 'black' and player['pNumber'] == 1:
     		move = (0,0,0,0)
-    		print("Epperando jogador branco jogar.")
+    		print("Epperando jogador black jogar.")
     		break
 
     # Envia a jogada para o servidor
