@@ -9,31 +9,48 @@ PORT = 5003
 # Classe para representar o tabuleiro de xadrez
 class Board:
     def __init__(self):
-        self.board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+    	self.line = ['a','b','c','d','e','f','g','h']
+    	self.column = [['1'],['2'],['3'],['4'],['5'],['6'],['7'],['8']]
+    	self.board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
                       ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-                      [' ', '.', ' ', '.', ' ', '.', ' ', '.'],
-                      ['.', ' ', '.', ' ', '.', ' ', '.', ' '],
-                      [' ', '.', ' ', '.', ' ', '.', ' ', '.'],
-                      ['.', ' ', '.', ' ', '.', ' ', '.', ' '],
+                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                       ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
                       ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
-        self.white_to_move = True
-
+    	self.next = 'white'
+    	
+    def update(self,next):
+    	self.next = next
+    	pass
+    
     def make_move(self, move):
         # Converte as coordenadas do movimento em índices da matriz
-        r1, c1, r2, c2 = move
+    	r1, c1, r2, c2 = move
         # Realiza o movimento
-        self.board[r2][c2] = self.board[r1][c1]
-        self.board[r1][c1] = ' '
-        self.white_to_move = not self.white_to_move
+    	self.board[r2][c2] = self.board[r1][c1]
+    	self.board[r1][c1] = ' '
 
     def get_state(self):
         # Retorna o estado atual do jogo em formato de dicionário
-        return {'board': self.board, 'white_to_move': self.white_to_move}
-
-
+        return {'board': self.board, 'next': self.next, 'line': self.line, 'column': self.column}
+	
+# Classe representa os jogadores
+class Player:
+	def __init__(self, color, pNumber):
+		self.color = color
+		self.pNumber = pNumber
+	
+	def getPlayer(self):
+		return {'color': self.color, 'pNumber': self.pNumber}
+	
 # Inicializa o tabuleiro
 board = Board()
+
+# Inicializa os jogadores
+player1 = Player('white',1)
+player2 = Player('black',2)
 
 # Cria o socket do servidor
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,10 +59,20 @@ sock.listen(2)
 
 # Aguarda a conexão dos clientes
 print('Aguardando conexões...')
+
+# Jogador 1
 conn1, addr1 = sock.accept()
 print(f'Cliente 1 conectado: {addr1}')
+
+# Jogador 2
 conn2, addr2 = sock.accept()
 print(f'Cliente 2 conectado: {addr2}')
+
+# Mensagem inicial do jogo
+welcome1 = pickle.dumps(player1.getPlayer())
+conn1.sendall(welcome1)
+welcome2 = pickle.dumps(player2.getPlayer())
+conn2.sendall(welcome2)
 
 # Loop principal do jogo
 while True:
@@ -55,12 +82,20 @@ while True:
     state2 = pickle.dumps(board.get_state())
     conn2.sendall(state2)
 
-    # Recebe a jogada do jogador 1
-    move1_data = conn1.recv(1024)
-    move1 = pickle.loads(move1_data)
-    board.make_move(move1)
+    next_state = board.get_state()
+    if next_state['next'] == 'white':
+    	# Recebe a jogada do jogador 1
+    	move1_data = conn1.recv(1024)
+    	move1 = pickle.loads(move1_data)
+    	board.make_move(move1)
+    	board.update('black')
+    	
+    if next_state['next'] == 'black':
+    	# Recebe a jogada do jogador 2
+    	move2_data = conn2.recv(1024)
+    	move2 = pickle.loads(move2_data)
+    	board.make_move(move2)
+    	board.update('white')
 
-    # Recebe a jogada do jogador 2
-    move2_data = conn2.recv(1024)
-    move2 = pickle.loads(move2_data)
-    board.make_move(move2)
+sock.shutdown()
+sock.close()
