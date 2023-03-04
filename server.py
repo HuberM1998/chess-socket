@@ -9,16 +9,16 @@ PORT = 5003
 # Classe para representar o tabuleiro de xadrez
 class Board:
     def __init__(self):
-    	self.line = ['a','b','c','d','e','f','g','h']
+    	self.line = [' ','a','b','c','d','e','f','g','h']
     	self.column = [['1'],['2'],['3'],['4'],['5'],['6'],['7'],['8']]
-    	self.board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-                      ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+    	self.board = [['r_b', 'n_b', 'b_b', 'q_b', 'k_b', 'b_b', 'n_b', 'r_b'],
+                      ['p_b', 'p_b', 'p_b', 'p_b', 'p_b', 'p_b', 'p_b', 'p_b'],
                       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                      ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-                      ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
+                      ['P_w', 'P_w', 'P_w', 'P_w', 'P_w', 'P_w', 'P_w', 'P_w'],
+                      ['R_w', 'N_w', 'B_w', 'Q_w', 'K_w', 'B_w', 'N_w', 'R_w']]
     	self.next = 'white'
     	
     def update(self,next):
@@ -26,11 +26,10 @@ class Board:
     	pass
     
     def make_move(self, move):
-        # Converte as coordenadas do movimento em índices da matriz
-    	r1, c1, r2, c2 = move
-        # Realiza o movimento
-    	self.board[r2][c2] = self.board[r1][c1]
-    	self.board[r1][c1] = ' '
+        pass
+    
+    def end_game(self):
+    	pass
 
     def get_state(self):
         # Retorna o estado atual do jogo em formato de dicionário

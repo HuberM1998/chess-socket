@@ -3,6 +3,7 @@
 import socket
 import pickle
 import sys
+import numpy as np
 
 HOST = '127.0.0.1'
 PORT = 5003
@@ -33,8 +34,12 @@ while True:
     board = state['board']
     line = state['line']
     column = state['column']
-    for row in board:
-        print(' '.join(row))
+    boardP= np.hstack((column,board))
+    for row in boardP:
+    	print(' '.join(row))
+    for i in line:
+       print(i, end = '   ')
+    print(f'\n')
     
 
     # Pede a jogada ao usuário
@@ -52,7 +57,7 @@ while True:
             		print("10:Jogada inválida.")
     	elif state['next'] == 'white' and player['pNumber'] == 2:
     		move = (0,0,0,0)
-    		print("Branco é o próximo a jogar.")
+    		print("Eperando jogador branco jogar.")
     		break
     
     	if state['next'] == 'black' and player['pNumber'] == 2:
@@ -67,7 +72,7 @@ while True:
             		print("10:Jogada inválida.")
     	elif state['next'] == 'black' and player['pNumber'] == 1:
     		move = (0,0,0,0)
-    		print("Preto é o próximo a jogar.")
+    		print("Epperando jogador branco jogar.")
     		break
 
     # Envia a jogada para o servidor
