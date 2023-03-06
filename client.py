@@ -12,6 +12,9 @@ PORT = 5003
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	sock.connect((HOST, PORT))
+	print("|              Xadrez                   |")
+	print("| Peças brancas são em letra maiuscula. |")
+	print("| Peças pretas são em letra minuscula.  |")
 except:
 	print("12: Connection error.")
 	sys.exit(1)
@@ -24,13 +27,8 @@ color = player['color']
 print(f'Bem vindo Jogador {pNumber}')
 print(f'Você é a peça {color}.')
 
-# Loop principal do jogo
-while True:
-    # Recebe o estado atual do jogo
-    state_data = sock.recv(1024)
-    state = pickle.loads(state_data)
-
-    # Imprime o estado atual do jogo
+# Imprime o estado atual do jogo
+def print_state(state):
     board = state['board']
     line = state['line']
     column = state['column']
@@ -40,7 +38,13 @@ while True:
     for i in line:
        print(i, end = ' ')
     print(f'\n')
-    
+
+# Loop principal do jogo
+while True:
+    # Recebe o estado atual do jogo
+    state_data = sock.recv(2048)
+    state = pickle.loads(state_data)
+    print_state(state)
 
     # Pede a jogada ao usuário
     while True:
@@ -49,26 +53,26 @@ while True:
         	print("Sua vez.")
         	try:
             		move_str = input("Digite a jogada (exemplo: P e4): ")
-            		move = (move_str)
+            		move = move_str
             		break
         	except ValueError:
             		print("10:Jogada inválida.")
     	elif state['next'] == 'white' and player['pNumber'] == 2:
-    		move = (0,0,0,0)
-    		print("Eperando jogador branco jogar.")
+    		move = ' '
+    		print("Eperando jogador jogar.")
     		break
     
     	if state['next'] == 'black' and player['pNumber'] == 2:
-        	print("Sua vez")
+        	print("Sua vez.")
         	try:
             		move_str = input("Digite a jogada (exemplo: p e4): ")
-            		move = (move_str)
+            		move = move_str
             		break
         	except ValueError:
             		print("10:Jogada inválida.")
     	elif state['next'] == 'black' and player['pNumber'] == 1:
-    		move = (0,0,0,0)
-    		print("Esperando jogador branco jogar.")
+    		move = ' '
+    		print("Esperando jogador jogar.")
     		break
 
     # Envia a jogada para o servidor

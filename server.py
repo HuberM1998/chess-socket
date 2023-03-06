@@ -30,55 +30,41 @@ class Board:
                       ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
                       ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
     
-    # Define peças do tabuleiro
-    def define_pieces(self):
-    	for i, v2 in enumerate(self.board):
-    		for j, v in enumerate(self.board[i]):
-    			if v.isalpha():
-    				if v.isupper():
-    					self.board[i][j] = Piece(x=i,y=j,token=v,property='white')
-    				if v.islower():
-    					self.board[i][j] = Piece(x=i,y=j,token=v,property='black')
-    
     # Faz um update de next, mudando quem pode jogar
     def update(self,next):
     	self.next = next
     
     # Verifica se o movimento é valido
-    def is_valid_move(self, from_square, to_square):
+    def is_valid_move(self, move):
+    	
     	pass
     
-    # Movimenta peças
+    # Movimenta as peças
     def make_move(self, move):
-    	print(move)
+    	pass
     
     # Define fim de jogo
     def end_game(self):
     	pass
-
+    
+    # Retorna o estado atual do jogo em formato de dicionário
     def get_state(self):
-        # Retorna o estado atual do jogo em formato de dicionário
         return {'board': self.board, 'next': self.next, 'line': self.line, 'column': self.column}
-	
+
 # Classe representa os jogadores
 class Player:
 	def __init__(self, color, pNumber):
 		self.color = color
 		self.pNumber = pNumber
+		self.dead_pieces = []
 	
 	def getPlayer(self):
 		return {'color': self.color, 'pNumber': self.pNumber}
 
-# Classe define peças do jogo 
-class Piece:
-    def __init__(self, x, y, token, property):
-        self.x, self.y = x, y
-        self.token = token
-        self.property = property
-
-    def __str__(self):
-        return f'{self.token}'
-
+	def dead_pieces(self, piece):
+		self.dead_pieces.append(piece)
+		pass
+		
 # Inicializa o tabuleiro
 board = Board()
 
@@ -106,22 +92,23 @@ conn2.sendall(welcome2)
 # Loop principal do jogo
 while True:
     # Envia o estado atual do jogo para os clientes
-    state1 = pickle.dumps(board.get_state())
-    conn1.sendall(state1)
-    state2 = pickle.dumps(board.get_state())
-    conn2.sendall(state2)
+    state = pickle.dumps(board.get_state())
+    conn1.sendall(state)
+    conn2.sendall(state)
 
-    next_state = board.get_state()
-    if next_state['next'] == 'white':
+    if state['next'] == 'white':
     	# Recebe a jogada do jogador 1
-    	move1_data = conn1.recv(1024)
+    	move1_data = conn1.recv(2048)
     	move1 = pickle.loads(move1_data)
+    	print(move1)
     	board.make_move(move1)
     	board.update('black')
-    elif next_state['next'] == 'black':
+    
+    elif state['next'] == 'black':
     	# Recebe a jogada do jogador 2
-    	move2_data = conn2.recv(1024)
+    	move2_data = conn2.recv(2048)
     	move2 = pickle.loads(move2_data)
+    	print(move2)
     	board.make_move(move2)
     	board.update('white')
 
