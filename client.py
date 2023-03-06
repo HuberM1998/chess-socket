@@ -13,7 +13,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	sock.connect((HOST, PORT))
 except:
-	print("12: Connection erro.")
+	print("12: Connection error.")
 	sys.exit(1)
 
 # Mensagem inicial do jogo
@@ -49,30 +49,26 @@ while True:
         	print("Sua vez.")
         	try:
             		move_str = input("Digite a jogada (exemplo: e2 e4): ")
-            		r1, c1, r2, c2 = move_str.split()
-            		r1, c1, r2, c2 = int(r1) - 1, ord(c1) - ord('a'), int(r2) - 1, ord(c2) - ord('a')
-            		move = (r1, c1, r2, c2)
+            		move = (move_str)
             		break
         	except ValueError:
             		print("10:Jogada inválida.")
     	elif state['next'] == 'white' and player['pNumber'] == 2:
     		move = (0,0,0,0)
-    		print("Eperando jogador white jogar.")
+    		print("Eperando jogador branco jogar.")
     		break
     
     	if state['next'] == 'black' and player['pNumber'] == 2:
         	print("Sua vez")
         	try:
             		move_str = input("Digite a jogada (exemplo: e2 e4): ")
-            		r1, c1, r2, c2 = move_str.split()
-            		r1, c1, r2, c2 = int(r1) - 1, ord(c1) - ord('a'), int(r2) - 1, ord(c2) - ord('a')
-            		move = (r1, c1, r2, c2)
+            		move = (move_str)
             		break
         	except ValueError:
             		print("10:Jogada inválida.")
     	elif state['next'] == 'black' and player['pNumber'] == 1:
     		move = (0,0,0,0)
-    		print("Epperando jogador black jogar.")
+    		print("Esperando jogador branco jogar.")
     		break
 
     # Envia a jogada para o servidor

@@ -2,30 +2,52 @@
 
 import socket
 import pickle
+from enum import Enum
 
 HOST = '127.0.0.1'
 PORT = 5003
 
-# Classe para representar o tabuleiro de xadrez
+# Cria o socket do servidor
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.bind((HOST, PORT))
+sock.listen(2)
+
+# Enumera a posição das colunas do tabuleiro
+class Col(Enum):
+	a = 0
+	b = 1
+	c = 2
+	d = 3
+	e = 4
+	f = 5
+	g = 6
+	h = 7
+	
+# Classe para representar o jogo
 class Board:
     def __init__(self):
     	self.line = [' ','a','b','c','d','e','f','g','h']
-    	self.column = [['1'],['2'],['3'],['4'],['5'],['6'],['7'],['8']]
+    	self.column = [['8'],['7'],['6'],['5'],['4'],['3'],['2'],['1']]
     	self.board = [['r_b', 'n_b', 'b_b', 'q_b', 'k_b', 'b_b', 'n_b', 'r_b'],
                       ['p_b', 'p_b', 'p_b', 'p_b', 'p_b', 'p_b', 'p_b', 'p_b'],
-                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                      ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+                      ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+                      ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
+                      ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
                       ['P_w', 'P_w', 'P_w', 'P_w', 'P_w', 'P_w', 'P_w', 'P_w'],
                       ['R_w', 'N_w', 'B_w', 'Q_w', 'K_w', 'B_w', 'N_w', 'R_w']]
     	self.next = 'white'
-    	
+    
+    # Faz um update de next, mudando quem pode jogar
     def update(self,next):
     	self.next = next
     
+    #Verifica se o movimento é valido
+    def is_valid_move(self, from_square, to_square):
+    	pass
+
     def make_move(self, move):
-        pass
+    	print(move)
     
     def end_game(self):
     	pass
@@ -42,18 +64,23 @@ class Player:
 	
 	def getPlayer(self):
 		return {'color': self.color, 'pNumber': self.pNumber}
-	
+
+# Classe define peças do jogo 
+class Piece:
+    def __init__(self, x, y, token, property):
+        self.x, self.y = x, y
+        self.token = token
+        self.property = property
+
+    def __str__(self):
+        return f'{self.token}'
+
 # Inicializa o tabuleiro
 board = Board()
 
 # Inicializa os jogadores
 player1 = Player('white',1)
 player2 = Player('black',2)
-
-# Cria o socket do servidor
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.bind((HOST, PORT))
-sock.listen(2)
 
 # Aguarda a conexão dos clientes
 print('Aguardando conexões...')
@@ -87,8 +114,7 @@ while True:
     	move1 = pickle.loads(move1_data)
     	board.make_move(move1)
     	board.update('black')
-    	
-    if next_state['next'] == 'black':
+    elif next_state['next'] == 'black':
     	# Recebe a jogada do jogador 2
     	move2_data = conn2.recv(1024)
     	move2 = pickle.loads(move2_data)
@@ -97,3 +123,5 @@ while True:
 
 sock.shutdown()
 sock.close()
+conn1.close()
+conn2.close()
