@@ -18,6 +18,7 @@ col = ('a','b','c','d','e','f','g','h')
 # Classe para representar o jogo
 class Board:
     def __init__(self):
+    	self.next = 'white'
     	self.line = [' ','a','b','c','d','e','f','g','h']
     	self.column = [['8'],['7'],['6'],['5'],['4'],['3'],['2'],['1']]
     	self.board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
@@ -28,26 +29,30 @@ class Board:
                       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
                       ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
                       ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
-	for i, v2 in enumerate(self.board):
-	    for j, v in enumerate(self.board[i]):
-               if v.isalpha():
-                  if v.isupper():
-                     self.board[i][j] = Piece(x=i, y=j, token=v, property='w')
-                  if v.islower():
-                     self.board[i][j] = Piece(x=i, y=j, token=v, property='b')
-    	self.next = 'white'
+    
+    # Define peças do tabuleiro
+    def define_pieces(self):
+    	for i, v2 in enumerate(self.board):
+    		for j, v in enumerate(self.board[i]):
+    			if v.isalpha():
+    				if v.isupper():
+    					self.board[i][j] = Piece(x=i,y=j,token=v,property='white')
+    				if v.islower():
+    					self.board[i][j] = Piece(x=i,y=j,token=v,property='black')
     
     # Faz um update de next, mudando quem pode jogar
     def update(self,next):
     	self.next = next
     
-    #Verifica se o movimento é valido
+    # Verifica se o movimento é valido
     def is_valid_move(self, from_square, to_square):
     	pass
-
+    
+    # Movimenta peças
     def make_move(self, move):
     	print(move)
     
+    # Define fim de jogo
     def end_game(self):
     	pass
 
@@ -122,5 +127,3 @@ while True:
 
 sock.shutdown()
 sock.close()
-conn1.close()
-conn2.close()

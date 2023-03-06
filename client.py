@@ -38,7 +38,7 @@ while True:
     for row in boardP:
     	print(' '.join(row))
     for i in line:
-       print(i, end = '   ')
+       print(i, end = ' ')
     print(f'\n')
     
 
