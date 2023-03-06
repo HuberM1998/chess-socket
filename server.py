@@ -92,23 +92,23 @@ conn2.sendall(welcome2)
 # Loop principal do jogo
 while True:
     # Envia o estado atual do jogo para os clientes
-    state = pickle.dumps(board.get_state())
-    conn1.sendall(state)
-    conn2.sendall(state)
+    state1 = pickle.dumps(board.get_state())
+    conn1.sendall(state1)
+    state2 = pickle.dumps(board.get_state())
+    conn2.sendall(state2)
 
-    if state['next'] == 'white':
+    next_state = board.get_state()
+    if next_state['next'] == 'white':
     	# Recebe a jogada do jogador 1
     	move1_data = conn1.recv(2048)
     	move1 = pickle.loads(move1_data)
-    	print(move1)
     	board.make_move(move1)
     	board.update('black')
     
-    elif state['next'] == 'black':
+    elif next_state['next'] == 'black':
     	# Recebe a jogada do jogador 2
     	move2_data = conn2.recv(2048)
     	move2 = pickle.loads(move2_data)
-    	print(move2)
     	board.make_move(move2)
     	board.update('white')
 
