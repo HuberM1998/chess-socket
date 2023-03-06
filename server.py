@@ -13,29 +13,28 @@ sock.bind((HOST, PORT))
 sock.listen(2)
 
 # Enumera a posição das colunas do tabuleiro
-class Col(Enum):
-	a = 0
-	b = 1
-	c = 2
-	d = 3
-	e = 4
-	f = 5
-	g = 6
-	h = 7
+col = ('a','b','c','d','e','f','g','h')
 	
 # Classe para representar o jogo
 class Board:
     def __init__(self):
     	self.line = [' ','a','b','c','d','e','f','g','h']
     	self.column = [['8'],['7'],['6'],['5'],['4'],['3'],['2'],['1']]
-    	self.board = [['r_b', 'n_b', 'b_b', 'q_b', 'k_b', 'b_b', 'n_b', 'r_b'],
-                      ['p_b', 'p_b', 'p_b', 'p_b', 'p_b', 'p_b', 'p_b', 'p_b'],
-                      ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
-                      ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
-                      ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
-                      ['   ', '   ', '   ', '   ', '   ', '   ', '   ', '   '],
-                      ['P_w', 'P_w', 'P_w', 'P_w', 'P_w', 'P_w', 'P_w', 'P_w'],
-                      ['R_w', 'N_w', 'B_w', 'Q_w', 'K_w', 'B_w', 'N_w', 'R_w']]
+    	self.board = [['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                      ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                      [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                      ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                      ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']]
+	for i, v2 in enumerate(self.board):
+	    for j, v in enumerate(self.board[i]):
+               if v.isalpha():
+                  if v.isupper():
+                     self.board[i][j] = Piece(x=i, y=j, token=v, property='w')
+                  if v.islower():
+                     self.board[i][j] = Piece(x=i, y=j, token=v, property='b')
     	self.next = 'white'
     
     # Faz um update de next, mudando quem pode jogar

@@ -48,7 +48,7 @@ while True:
     	if state['next'] == 'white' and player['pNumber'] == 1:
         	print("Sua vez.")
         	try:
-            		move_str = input("Digite a jogada (exemplo: e2 e4): ")
+            		move_str = input("Digite a jogada (exemplo: P e4): ")
             		move = (move_str)
             		break
         	except ValueError:
@@ -61,7 +61,7 @@ while True:
     	if state['next'] == 'black' and player['pNumber'] == 2:
         	print("Sua vez")
         	try:
-            		move_str = input("Digite a jogada (exemplo: e2 e4): ")
+            		move_str = input("Digite a jogada (exemplo: p e4): ")
             		move = (move_str)
             		break
         	except ValueError:
