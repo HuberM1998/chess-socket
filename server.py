@@ -63,7 +63,6 @@ class Player:
 
 	def dead_pieces(self, piece):
 		self.dead_pieces.append(piece)
-		pass
 		
 # Inicializa o tabuleiro
 board = Board()

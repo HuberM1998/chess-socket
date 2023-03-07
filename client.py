@@ -78,4 +78,3 @@ while True:
     # Envia a jogada para o servidor
     move_data = pickle.dumps(move)
     sock.sendall(move_data)
-
