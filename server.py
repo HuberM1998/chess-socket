@@ -36,12 +36,48 @@ class Board:
     
     # Verifica se o movimento é valido
     def is_valid_move(self, move):
-    	
-    	pass
+        piece, start_pos, end_pos = move
+
+        # Checa se as coordenadas estão dentro do tabuleiro
+        if start_pos[0] not in self.line or end_pos[0] not in self.line or \
+           int(start_pos[1]) not in range(1, 9) or int(end_pos[1]) not in range(1, 9):
+            return False
+
+        start_col = self.line.index(start_pos[0])
+        start_row = 8 - int(start_pos[1])
+
+        end_col = self.line.index(end_pos[0])
+        end_row = 8 - int(end_pos[1])
+
+        # Checa se a posição inicial tem uma peça
+        if self.board[start_row][start_col] != piece:
+            return False
+
+        # Checa se a posição final não tem uma peça da mesma cor
+        if self.board[end_row][end_col].islower() == piece.islower():
+            return False
+
+        # Checa se o movimento é válido para o tipo de peça
+        if not self._is_valid_move_for_piece(piece, start_row, start_col, end_row, end_col):
+            return False
+
+        return True
     
     # Movimenta as peças
     def make_move(self, move):
-    	pass
+    	piece, start_pos, end_pos = move
+
+        start_col = self.line.index(start_pos[0])
+        start_row = 8 - int(start_pos[1])
+
+        end_col = self.line.index(end_pos[0])
+        end_row = 8 - int(end_pos[1])
+
+        # Remove a peça do tabuleiro
+        self.board[start_row][start_col] = ' '
+
+        # Coloca a peça na posição final
+        self.board[end_row][end_col] = piece
     
     # Define fim de jogo
     def end_game(self):
