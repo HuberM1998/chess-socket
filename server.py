@@ -63,6 +63,45 @@ class Board:
 
         return True
     
+    def _is_valid_move_for_piece(self, move):
+	    piece, start_pos, end_pos = move
+	    
+        start_col = self.line.index(start_pos[0])
+        start_row = 8 - int(start_pos[1])
+
+        end_col = self.line.index(end_pos[0])
+        end_row = 8 - int(end_pos[1])
+    
+	    if piece == 'p' or piece =="P":
+		    if piece == 'p':
+			    if end_row == start_row-1 and end_col == start_col and self.board[end_row][end_col] == ' ':
+				    return True
+                if end_col == start_col-1 or end_col == start_col+1 and self.board[end_row][end_col] != ' ' and end_row == start_row-1:
+                    return True
+			    return False
+            if piece == 'P':
+			    if end_row == start_row+1 and end_col == start_col and self.board[end_row][end_col] == ' ':
+				    return True
+			    if end_col == start_col-1 or end_col == start_col+1 and self.board[end_row][end_col] != ' ' and end_row == start_row+1:
+                    return True
+			    return False
+	    
+        if piece == 'q' or piece =="Q":
+		    return True
+    
+        if piece == 'k' or piece =="K":
+		    return True
+    
+        if piece == 'b' or piece =="B":
+		    return True
+    
+        if piece == 'n' or piece =="N":
+		    return True
+    
+        if piece == 'r' or piece =="R":
+		    return True
+        pass
+
     # Movimenta as peças
     def make_move(self, move):
     	piece, start_pos, end_pos = move
