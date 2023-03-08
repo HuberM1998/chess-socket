@@ -376,7 +376,7 @@ class Piece():
 		
 		if  abs( num_l_from - num_l_to) != abs( num_from_ - num_to) :
 			print(f'8: Movimento Inválido.')
-			return
+			return False
 		
 		x = 1 if (num_l_to) - (num_l_from) > 0 else -1
 		y = 1 if num_to - num_from_ > 0 else -1
@@ -384,18 +384,13 @@ class Piece():
 		i =  (num_l_from) + x
 		j =  num_from_ + y
 		
-		if x == 1:
-			i < (num_l_to)
-		else:
-			i > (num_l_to)
-		
-		while(i):
+		while(i < num_l_to if x==1 else i > num_l_to):
 			if board[i][j] != ' ':
 				print(f'13: Caminho bloqueado.')
 				return False
 			i += x
 			j += y
-	
+		return True
 	# --
 	def king_check(self,move_from,move_to,board):
 
