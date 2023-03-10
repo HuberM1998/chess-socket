@@ -1,11 +1,13 @@
-# chess.py - server.py
+# server.py -- version 2
 
 import socket
 import pickle
+import threading
 import numpy as np
+import chess
 
-HOST = '127.0.0.1'
-PORT = 5003
+HOST = "127.0.0.1"
+PORT = 5000
 
 # Auxiliary lists
 col = ['a','b','c','d','e','f','g','h']
@@ -17,10 +19,8 @@ class Game():
 	"""
 		Game Class
 	"""
-	def __init__(self,player1,player2):
+	def __init__(self):
 		self.board = Board()
-		self.player1 = player1
-		self.player2 = player2
 		self.turn = True
 			
 	def promotion(self):
@@ -38,7 +38,7 @@ class Game():
 		p = Piece(move_to,move_from,board)
 
 		if piece == 'p' or piece == 'P':
-			return p.is_valid_move_pawn(move_from, move_to, board)
+			return p.is_valid_move_pawn(move_from, move_to, board, self.turn)
 		if piece == 'b' or piece == 'B':
 			return p.is_valid_move_bishop(move_from, move_to, board)
 		if piece == 'k' or piece == 'K':
@@ -90,18 +90,19 @@ class Game():
 		if self.is_valid_move(move_from, move_to, b, piece):
 		
 			if target == ' ':
-				b[num_l_from][num_from]	= ' ' 
+				b[num_l_from][num_from]	= ' '
 				b[num_l_to][num_to] = piece
 				self.board.update_board(b)						
 			if target in black or target in white:
 				b[num_l_from][num_from]	= ' ' 
 				b[num_l_to][num_to] = piece
 				self.board.update_board(b)
+				"""
 				if piece in black:
 					self.player1.dead_pieces(target)
 				if piece in white:
 					self.player2.dead_pieces(target)
-				
+				"""
 			if piece in white:
 				turn = False
 				self.update_turn(turn)
@@ -148,6 +149,29 @@ class Game():
 		
 		return None
 
+class Player():
+	"""	
+		Player Class
+	
+	"""
+	def __init__(self, color, pNumber):
+		self.color = color
+		self.pNumber = pNumber
+		self.dead_pieces = []
+	
+	def getPlayer(self):
+		return {'color': self.color, 'pNumber': self.pNumber}
+
+	def dead_pieces(self, piece):
+		self.dead_pieces.append(piece)
+		
+	def list_deadpieces(self):
+		for i in self.dead_pieces:
+			print(f'{i}: {self.dead_pieces[i]}')
+	
+	def getDead_pieces(self):
+		return self.dead_pieces
+	
 class Board():
 	"""
 		Board Class.
@@ -176,29 +200,6 @@ class Board():
 	
 	def update_board(self,board):
 		self.board = board
-
-class Player():
-	"""
-		Player Class
-	"""
-	def __init__(self, color, pNumber,turn):
-		self.color = color
-		self.pNumber = pNumber
-		self.turn = turn
-		self.dead_pieces = []
-	
-	def getPlayer(self):
-		return {'color': self.color, 'pNumber': self.pNumber, 'turn': self.turn}
-
-	def dead_pieces(self, piece):
-		self.dead_pieces.append(piece)
-		
-	def list_deadpieces(self):
-		for i in self.dead_pieces:
-			print(f'{i}: {dead_pieces[i]}')
-	
-	def getDead_pieces(self):
-		return self.dead_pieces
 
 class Piece():
 	"""
@@ -296,7 +297,7 @@ class Piece():
 		print(f'8: Movimento inválido.')
 		return False
 
-	def is_valid_move_pawn(self,move_from,move_to,board):
+	def is_valid_move_pawn(self,move_from,move_to,board,turn):
 	
 		for i in range(len(col)):
 			if move_from[0] == col[i]:
@@ -308,11 +309,23 @@ class Piece():
 			if move_from[1] == l[i]:
 				num_l_from = i
 			if move_to[1] == l[i]:
-				num_l_to = i		
+				num_l_to = i	
+					
+		target = board[num_l_to][num_to]
 		
-		if num_from_ != num_to:
+		if num_from_ != num_to: 
+			if target in white or target in black:
+				if abs(num_l_from - num_l_to) == 1 and abs(num_from_ - num_to) == 1:
+					return True 
+
 			print(f'8: Movimento Inválido.')
 			return False
+		
+		piece = board[num_l_from][num_from_]
+		
+		if self.pawn_behind(piece,num_l_from,num_l_to,turn):
+			print(f'8: Movimento Inválido.')
+			return False			
 		
 		if num_l_from == 1 or num_l_from == 6:
 			if abs(num_l_from - num_l_to) > 2:
@@ -324,7 +337,23 @@ class Piece():
 				print(f'Movimento Inválido.')
 				return False
 			return True
-		return True 
+			
+		return True
+		
+	# Verifies if pawn is being moved to a position "below" it  
+	def pawn_behind(self,piece, num_l_from, num_l_to,turn):
+		if turn:
+			if piece in white:
+				if num_l_from - num_l_to < 0:
+					print(f'8: Moviento Inválido.')
+					return True
+		else:
+			if piece in black:
+				if num_l_from - num_l_to > 0:
+					print(f'8: Moviento Inválido.')
+					return True
+		return False
+	
 	
 	# Check if there is one or more pieces in the middle of the way in the horizontal or vertical direction
 	def check_updown(self,move_from, move_to, board):
@@ -374,7 +403,7 @@ class Piece():
 			if move_to[1] == l[i]:
 				num_l_to = i
 		
-		if  abs( num_l_from - num_l_to) != abs( num_from_ - num_to) :
+		if  abs( num_l_from - num_l_to) != abs( num_from_ - num_to):
 			print(f'8: Movimento Inválido.')
 			return False
 		
@@ -390,9 +419,10 @@ class Piece():
 				return False
 			i += x
 			j += y
+		
 		return True
-	# --
-	def king_check(self,move_from,move_to,board):
+	
+	def king_check(self,move_from,move_to,board,turn):
 
 		for i in range(len(col)):
 			if move_from[0] == col[i]:
@@ -406,78 +436,94 @@ class Piece():
 			if move_to[1] == l[i]:
 				num_l_to = i
 		
-		# TO DO
+		###
 		
 		return False
-		
-if __name__ == "__main__":
-	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	sock.bind((HOST, PORT))
-	sock.listen(2)
-	# Aguarda a conexão dos clientes
-	print('Aguardando conexões...')
 	
-	player1 = Player('white',1, True)
-	player2 = Player('black',2, False)
-	chess = Game(player1,player2)
+	def check_knight(self, king_pos, board,turn):
+		pass
 	
-	# Jogador 1
-	conn1, addr1 = sock.accept()
-	print(f'Cliente 1 conectado: {addr1}')
+	def check_UD(self, king_pos, board,turn):
+		pass
 
-	# Jogador 2
-	conn2, addr2 = sock.accept()
-	print(f'Cliente 2 conectado: {addr2}')
-	
-	# Mensagem inicial do jogo
-	welcome1 = pickle.dumps(player1.getPlayer())
-	conn1.sendall(welcome1)
-	welcome2 = pickle.dumps(player2.getPlayer())
-	conn2.sendall(welcome2)
+	def check_HV(self, king_pos, board,turn):
+		pass
 
-	b = chess.board.get_board()
-	b1 = pickle.dumps(b)
-	conn1.sendall(b1)
-	b2 = pickle.dumps(b)
-	conn2.sendall(b2)
+players = []
+turns = 0
+
+class Server():
 	
-	turn = chess.get_turn()
-	t1 = pickle.dumps(turn)
-	conn1.sendall(t1)
-	t2 = pickle.dumps(turn)
-	conn2.sendall(t2)
-	
-	while True:
-		if chess.get_turn() == True:
-			# Recebe a jogada do jogador 1
-    			move1_data = conn1.recv(2048)
-    			move1 = pickle.loads(move1_data)
-    			#print(move1) --> para debug
-    			if len(list(move1)) != 5:
-    				print(f'7: Formato de entrada incorreto. Formato: e2 e4')
-    			move_from, move_to = chess.transform_input(move1)
-    			chess.move(move_from,move_to)
-		elif chess.get_turn() == False:
-			# Recebe a jogada do jogador 2
-    			move2_data = conn2.recv(2048)
-    			move2 = pickle.loads(move2_data)
-    			#print(move2) --> para debug
-    			if len(list(move2)) != 5:
-    				print(f'7: Formato de entrada incorreto. Formato: e2 e4')
-    			move_from, move_to = chess.transform_input(move2)
-    			chess.move(move_from,move_to)
+	def start_server():
+		global connected
+
+		print("Conectando servidor...")
+		sever = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		
-		turn = chess.get_turn()
-		t1 = pickle.dumps(turn)
-		conn1.sendall(t1)
-		t2 = pickle.dumps(turn)
-		conn2.sendall(t2)
-		
-		b = chess.board.get_board()
-		b1 = pickle.dumps(b)
-		conn1.sendall(b1)
-		b2 = pickle.dumps(b)
-		conn2.sendall(b2)
+		if self.verify_port(PORT,HOST,server) == False:
+			print("Porta sendo usada.")
+			server.close()
+			
+		try:
+			server.bind((HOST, PORT))
+		except:
+			print("Erro ao abrir servidor!")
+			
+		print("Servidor criado!")
+		self.chess = Game()
+		server.listen(2)
+		threading._start_new_thread(accept_clients, (server,' '))
 	
-	sock.shutdown()
-	sock.close()
+	def verify_port(self,PORT,HOST,sock):
+		test = (HOST,PORT)
+		result = sock.connect_ex(test)
+		if result == 0:
+			print("Porta está aberta.")
+			return False
+		else:
+			return True
+	
+	def accept_clients(self,server, y):
+		print("Esperando conexão dos jogadores: ")
+		while True:
+			if len(client) < 2:
+			HOST, PORT = server.accept()
+			players.append(HOST)
+			threading._start_new_thread(handle_clients, (client, PORT))
+
+	
+	def handle_clients(self,client_conn, client_addr):
+		
+		if len(players) < 2:
+			client_conn.send('welcome1'.encode())
+		else:
+			client_conn.send('welcome2'.encode())
+		
+		while True:
+			from_client = str(client_conn.recv(2048).decode())
+			
+			if from_client.startswith('ready'):
+				data = 'start' + '\n' + self.chess.board.get_board() + '\n' + self.get_turn
+				client_conn.sendall(data.encode())
+			elif from_client.startswith('send move'):
+				pass
+			elif from_client.startswith('give up'):
+				pass
+			elif from_client.startswith('disconnect'):
+				pass
+			
+			
+			move_from, move_to = self.chess.transform_input(move_str)	
+			self.chess.move(move_from,move_to)
+		
+		client_conn.close()
+	
+	def disconnect(self,connection):
+		connection.close()
+	
+
+server = Server()
+		
+	
+	
+	
