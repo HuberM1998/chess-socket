@@ -6,7 +6,7 @@ import sys
 import numpy as np
 
 HOST = '127.0.0.1'
-PORT = 5003
+PORT = 5001
 
 # Cria o socket do cliente
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,7 +24,8 @@ player_data = sock.recv(1024)
 player = pickle.loads(player_data)
 pNumber = player['pNumber']
 color = player['color']
-print(f'Bem vindo Jogador {pNumber}')
+nome = input('Por favor, digite o seu nome: ')
+print(f'Bem vindo, {nome}')
 print(f'Você é a peça {color}.')
 
 # Imprime o estado atual do jogo
@@ -59,7 +60,7 @@ while True:
             		print("10:Jogada inválida.")
     	elif state['next'] == 'white' and player['pNumber'] == 2:
     		move = ' '
-    		print("Eperando jogador jogar.")
+    		print("Esperando jogador jogar.")
     		break
     
     	if state['next'] == 'black' and player['pNumber'] == 2:
