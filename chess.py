@@ -14,13 +14,9 @@ class Game():
 	"""
 	def __init__(self):
 		self.board = Board()
-		#self.player1 = Player('white', 1)
-		#self.player2 = Player('black', 2)
+		self.player1 = {'color': 'white', 'dead_pieces': []}
+		self.player2 = {'color': 'black', 'dead_pieces': []}
 		self.turn = True
-			
-	def promotion(self):
-		# Promotes the Pawn
-		pass
 	
 	def reset_board():
 		self.board.set_board()
@@ -85,9 +81,8 @@ class Game():
 			print(f'5: Não pode comer sua própria peça')
 			return False
 		
-		
 		if self.is_valid_move(move_from, move_to, b, piece):
-		
+			
 			if target == ' ':
 				b[num_l_from][num_from]	= ' '
 				b[num_l_to][num_to] = piece
@@ -96,12 +91,12 @@ class Game():
 				b[num_l_from][num_from]	= ' ' 
 				b[num_l_to][num_to] = piece
 				self.board.update_board(b)
-				"""
+				
 				if piece in black:
-					self.player1.dead_pieces(target)
+					self.player1['dead_pieces'].append(target)
 				if piece in white:
-					self.player2.dead_pieces(target)
-				"""
+					self.player2['dead_pieces'].append(target)
+					
 			if piece in white:
 				turn = False
 				self.update_turn(turn)
@@ -113,6 +108,7 @@ class Game():
 			print(f'8: Movimento inválido.')
 			return False
 		return True
+
 	def check_piece_color(self,piece):
 		if self.turn:
 			if piece not in white:
@@ -149,28 +145,8 @@ class Game():
 		
 		return None
 
-class Player():
-	"""	
-		Player Class
-	
-	"""
-	def __init__(self, color, pNumber):
-		self.color = color
-		self.pNumber = pNumber
-		self.dead_pieces = []
-	
-	def getPlayer(self):
-		return {'color': self.color, 'pNumber': self.pNumber}
-
-	def dead_pieces(self, piece):
-		self.dead_pieces.append(piece)
-		
-	def list_deadpieces(self):
-		for i in self.dead_pieces:
-			print(f'{i}: {self.dead_pieces[i]}')
-	
-	def getDead_pieces(self):
-		return self.dead_pieces
+	def getDead_pieces(self,player):
+		return self.player['dead_pieces']
 	
 class Board():
 	"""
@@ -280,9 +256,7 @@ class Piece():
 		if abs(num_from_ - num_to) > 1:
 			print(f'8: Movimento Inválido')
 			return False 
-		
-		# TO DO CHECK CONDITIONS
-		
+
 		return True		
 
 	def is_valid_move_knight(self,move_from,move_to,board):
@@ -450,14 +424,156 @@ class Piece():
 		
 		return False
 	
-	def check_knight(self, king_pos, board,turn):
-		pass
+	# Knight
+	def check_knight(self, board, turn, pos):
+		
+		piece = board[pos[0]][pos[1]]
+		if turn == True:
+			if piece != ' ' and piece not in white and piece == 'n':
+				return False
+			return True
+		elif turn == False:
+			if piece != ' ' and piece not in black and piece == 'N':
+				return False
+			return True
 	
-	def check_UD(self, king_pos, board,turn):
-		pass
+	# Rook and Queen
+	def check_UD(self, num_from_, num_l_from, board,turn):
+		
+		king = [ num_l_from , num_from_ ]
+		
+		if turn == True:
+			for i in range(8):
+				for j in range(8):
+					if i == num_l_from:
+						if board[i][j] == 'q':
+							temp = abs(j - num_from_)
+							while temp != 0:
+								if board[i][temp] in black or board[i][temp] in white:
+									return False
+								temp -=1
+							return True
+						if board[i][j] == 'r':
+							temp = abs(j - num_from_)
+							while temp != 0:
+								if board[i][temp] in black or board[i][temp] in white:
+									return False
+								temp -=1
+							return True
+					if j == num_from_ :
+						if board[i][j] == 'q':
+							temp = abs(i - num_l_from)
+							while temp != 0:
+								if board[temp][j] in black or board[temp][j] in white:
+									return False
+								temp -=1
+							return True
+						if board[i][j] == 'r':
+							temp = abs(i - num_l_from)
+							while temp != 0:
+								if board[temp][j] in black or board[temp][j] in white:
+									return False
+								temp -=1
+							return True
+		elif turn == False:
+			for i in range(8):
+				for j in range(8):
+					if i == num_l_from:
+						if board[i][j] == 'Q':
+							temp = abs(j - num_from_)
+							while temp != 0:
+								if board[i][temp] in black or board[i][temp] in white:
+									return False
+								temp -=1
+							return True
+							
+						if board[i][j] == 'R':
+							temp = abs(j - num_from_)
+							while temp != 0:
+								if board[i][temp] in black or board[i][temp] in white:
+									return False
+								temp -=1
+							return True
+					if j == num_from_ :
+						if board[i][j] == 'Q':
+							temp = abs(i - num_l_from)
+							while temp != 0:
+								if board[temp][j] in black or board[temp][j] in white:
+									return False
+								temp -=1
+							return True
+							
+						if board[i][j] == 'R':
+							temp = abs(i - num_l_from)
+							while temp != 0:
+								if board[temp][j] in black or board[temp][j] in white:
+									return False
+								temp -=1
+							return True
+		
+	# Pawn, Bishop and Queen
+	def check_HV(self, move_to,move_from, board,turn):
+		
+		for i in range(len(col)):
+			if move_from[0] == col[i]:
+				num_from_ = i
+			if move_to[0] == col[i]:
+				num_to = i
 
-	def check_HV(self, king_pos, board,turn):
-		pass
+		for i in range(len(l)):
+			if move_from[1] == l[i]:
+				num_l_from = i
+			if move_to[1] == l[i]:
+				num_l_to = i
+		
+		if turn == True:
+			x = 1 if num_l_to - num_l_from > 0 else -1 
+			y = 1 if num_to - num_from_ > 0 else -1
+			
+			i = num_l_from + x
+			j = num_from_ + y
+			
+			exist = board[i][j] != None
+			if exist and board[i][j] not in white: 
+				return False
+			
+			while( i <= num_l_to if x == 1 else i >= num_l_to):
+				if exist and board[i][j] not in white:
+					if board[i][j] in black:
+						return False	
+					else:
+						return True
+				if exist and board[i][j] in white:
+					return True
+				
+				i += x
+				j += y
+				exist = board[i][j] != None
+			return True
+		elif turn == False:
+			x = 1 if num_l_to - num_l_from > 0 else -1 
+			y = 1 if num_to - num_from_ > 0 else -1
+			
+			i = num_l_from + x
+			j = num_from_ + y
+			
+			exist = board[i][j] != None
+			if exist and board[i][j] not in black: 
+				return False
+			
+			while( i <= num_l_to if x == 1 else i >= num_l_to):
+				if exist and board[i][j] not in black:
+					if board[i][j] in white:
+						return False	
+					else:
+						return True
+				if exist and board[i][j] in black:
+					return True
+				
+				i += x
+				j += y
+				exist = board[i][j] != None
+			return True
 
 """
 if __name__ == "__main__":

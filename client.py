@@ -27,6 +27,7 @@ def connect_client():
 				print("| Peças brancas são em letra maiuscula. |")
 				print("| Peças pretas são em letra minuscula.  |")
 				print("| Você é a branca.                      |")
+				print("| Digite: desistir para recomeçar jogo  |")
 				ready = 'ready'
 				client.sendall(pickle.dumps(ready))
 			elif from_server == "welcome2":
@@ -35,6 +36,7 @@ def connect_client():
 				print("| Peças brancas são em letra maiuscula. |")
 				print("| Peças pretas são em letra minuscula.  |")
 				print("| Você é a preta.                       |")
+				print("| Digite: desistir para recomeçar jogo  |")
 				ready = 'ready'
 				client.sendall(pickle.dumps(ready))
 		
@@ -45,14 +47,16 @@ def connect_client():
 			print(type(game_begin[2]))
 			if game_begin[2] == 'True':
 				move = input("Faça seu movimento (ex. e2 e4): ")
+				
 				if move == 'desistir':
 					client.sendall(pickle.dumps('give up'))
-				while len(list(move)) != 5:
-					print(f'7: Formato de entrada incorreto. Formato: e2 e4')
-					move = input("Faça seu movimento (ex. e2 e4): ")
-				mm = 'send move' + '\n' + move
-				client.sendall(pickle.dumps(mm))
-				turn = 'False'
+				else:
+					while len(list(move)) != 5:
+						print(f'7: Formato de entrada incorreto. Formato: e2 e4')
+						move = input("Faça seu movimento (ex. e2 e4): ")
+					mm = 'send move' + '\n' + move
+					client.sendall(pickle.dumps(mm))
+	
 			else:
 				print("Esperano jogador adversário.")
 				client.sendall(pickle.dumps('wait'))
@@ -62,15 +66,17 @@ def connect_client():
 			print_state(board[1])
 			if board[2] == 'current':
 				move = input("Faça seu movimento (ex. e2 e4): ")
+				
 				if move == 'desistir':
-					client.sendall(pickle.dumps('give up'))
-				while len(list(move)) != 5:
-					print(f'7: Formato de entrada incorreto. Formato: e2 e4')
-					move = input("Faça seu movimento (ex. e2 e4): ")
-				mm = 'send move' + '\n' + move
-				client.sendall(pickle.dumps(mm))
+					client.sendall(pickle.dumps('give up'))				
+				else:
+					while len(list(move)) != 5:
+						print(f'7: Formato de entrada incorreto. Formato: e2 e4')
+						move = input("Faça seu movimento (ex. e2 e4): ")
+					mm = 'send move' + '\n' + move
+					client.sendall(pickle.dumps(mm))
 			else:
-				print("Esperano jogador adversário.")
+				print("Esperando jogador adversário.")
 				client.sendall(pickle.dumps('wait'))
 			
 		elif from_server.startswith('OK'):
@@ -79,20 +85,24 @@ def connect_client():
 		elif from_server.startswith('invalid'):
 			print('Jogada inválida.')
 			move = input("Faça seu movimento (ex. e2 e4): ")
+			
 			if move == 'desistir':
-					client.sendall(pickle.dumps('give up'))
-			while len(list(move)) != 5:
-				print(f'7: Formato de entrada incorreto. Formato: e2 e4')
-				move = input("Faça seu movimento (ex. e2 e4): ")
-			mm = 'send move' + '\n' + move
-			client.sendall(pickle.dumps(mm))
+				client.sendall(pickle.dumps('give up'))
+			else:
+				while len(list(move)) != 5:
+					print(f'7: Formato de entrada incorreto. Formato: e2 e4')
+					move = input("Faça seu movimento (ex. e2 e4): ")
+				mm = 'send move' + '\n' + move
+				client.sendall(pickle.dumps(mm))
 			
 		elif from_server.startswith('wait'):
-			print("Esperano jogador adversário.")
+			print("Esperando jogador adversário.")
 			client.sendall(pickle.dumps('wait'))
 				
 		elif from_server.startswith("check mate"):
-			pass
+			print("Jogador" + color + "venceu")
+			choice = input("Quer começar nova partida?(SIM ou NAO): ")
+			client.sendall(pickle.dumps('start again' + '\n' + choice))
 			
 		elif from_server.startswith("game end"):
 			print("Um jogador desistiu. Partida será reiniciada!")
@@ -114,7 +124,7 @@ def print_state(state):
 	for row in bP:
 		print(' '.join(row))
 	for i in line:
-		print(i, end = ' ')
+		print(i, end = '  ')
 	print(f'\n')
 
 # Converte o tabuleiro

@@ -1,11 +1,11 @@
-# server.py -- version 2
+# server.py
 
 import socket
 import pickle
 import numpy as np
 import chess
 
-turns = 0
+
 def start_server():
 	HOST = "127.0.0.1"
 	PORT = 5000
@@ -58,7 +58,8 @@ def start_server():
 			move = from_client1.split('\n')
 			mov = move[1]
 			move_from, move_to = ch.transform_input(mov)	
-		
+			#if ch.check():
+			#	pass
 			if ch.move(move_from,move_to):
 				current_turn.sendall(pickle.dumps('OK'))
 				current_turn, opponent = opponent, current_turn
