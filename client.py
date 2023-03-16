@@ -6,9 +6,10 @@ import sys
 import numpy as np
 
 HOST = '127.0.0.1'
-PORT = 5001
+PORT = 5003
 
 # Cria o socket do cliente
+nome = input('Por favor, digite o seu nome: ')
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
 	sock.connect((HOST, PORT))
@@ -16,7 +17,7 @@ try:
 	print("| Peças brancas são em letra maiuscula. |")
 	print("| Peças pretas são em letra minuscula.  |")
 except:
-	print("12: Connection error.")
+	print("12: Erro de conexão.")
 	sys.exit(1)
 
 # Mensagem inicial do jogo
@@ -24,7 +25,6 @@ player_data = sock.recv(1024)
 player = pickle.loads(player_data)
 pNumber = player['pNumber']
 color = player['color']
-nome = input('Por favor, digite o seu nome: ')
 print(f'Bem vindo, {nome}')
 print(f'Você é a peça {color}.')
 

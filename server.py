@@ -5,7 +5,7 @@ import pickle
 from enum import Enum
 
 HOST = '127.0.0.1'
-PORT = 5001
+PORT = 5003
 
 # Cria o socket do servidor
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,12 +63,195 @@ class Board:
 
         return True
     
-    def _is_valid_move_for_piece(self, move):
-        pass
+    def _is_valid_move_for_piece(self, piece, start_row, start_col, end_row, end_col):
+        # Checa se o movimento é válido para um peão branco
+        if piece == 'P':
+            # Verifica se a peça está se movendo para frente
+            if start_col == end_col and end_row == start_row - 1:
+                # Checa se a posição final está livre
+                if self.board[end_row][end_col] == ' ':
+                    return True
+            # Verifica se a peça está capturando uma peça inimiga na diagonal esquerda
+            elif end_col == start_col - 1 and end_row == start_row - 1:
+                if self.board[end_row][end_col].islower():
+                    return True
+            # Verifica se a peça está capturando uma peça inimiga na diagonal direita
+            elif end_col == start_col + 1 and end_row == start_row - 1:
+                if self.board[end_row][end_col].islower():
+                    return True
+            # Verifica se é o primeiro movimento do peão e pode andar duas casas para frente
+            elif start_row == 6 and end_row == 4 and start_col == end_col and self.board[end_row][end_col] == ' ' and self.board[end_row + 1][end_col] == ' ':
+                return True
+            # Caso não seja nenhum dos movimentos válidos, retorna False
+            else:
+                return False
+        # Checa se o movimento é válido para um peão preto
+        elif piece == 'p':
+            # Verifica se a peça está se movendo para frente
+            if start_col == end_col and end_row == start_row + 1:
+                # Checa se a posição final está livre
+                if self.board[end_row][end_col] == ' ':
+                    return True
+            # Verifica se a peça está capturando uma peça inimiga na diagonal esquerda
+            elif end_col == start_col - 1 and end_row == start_row + 1:
+                if self.board[end_row][end_col].isupper():
+                    return True
+            # Verifica se a peça está capturando uma peça inimiga na diagonal direita
+            elif end_col == start_col + 1 and end_row == start_row + 1:
+                if self.board[end_row][end_col].isupper():
+                    return True
+            # Verifica se é o primeiro movimento do peão e pode andar duas casas para frente
+            elif start_row == 1 and end_row == 3 and start_col == end_col and self.board[end_row][end_col] == ' ' and self.board[end_row - 1][end_col] == ' ':
+                return True
+            # Caso não seja nenhum dos movimentos válidos, retorna False
+            else:
+                return False
+
+        # Checa se o movimento é válido para a torre branca ou preta
+        if piece == 'R' or piece == 'r':
+            # Verifica se a peça está se movendo em linha reta
+            if start_row == end_row or start_col == end_col:
+                # Verifica se há outras peças no caminho
+                if start_row == end_row:
+                    if start_col < end_col:
+                        for col in range(start_col+1, end_col):
+                            if self.board[start_row][col] != ' ':
+                                return False
+                    else:
+                        for col in range(end_col+1, start_col):
+                            if self.board[start_row][col] != ' ':
+                                return False
+                else:
+                    if start_row < end_row:
+                        for row in range(start_row+1, end_row):
+                            if self.board[row][start_col] != ' ':
+                                return False
+                    else:
+                        for row in range(end_row+1, start_row):
+                            if self.board[row][start_col] != ' ':
+                                return False
+                # Verifica se a posição final está livre ou se há uma peça inimiga para capturar
+                if self.board[end_row][end_col] == ' ' or (piece.isupper() != self.board[end_row][end_col].isupper()):
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        
+        # Checa se o movimento é válido para o bispo branco ou preto
+        if piece == 'B' or piece == 'b':
+            # Verifica se a peça está se movendo na diagonal
+            if abs(start_row - end_row) == abs(start_col - end_col):
+                # Verifica se há outras peças no caminho
+                if end_row > start_row and end_col > start_col:
+                    for i in range(1, end_row - start_row):
+                        if self.board[start_row + i][start_col + i] != ' ':
+                            return False
+                elif end_row > start_row and end_col < start_col:
+                    for i in range(1, end_row - start_row):
+                        if self.board[start_row + i][start_col - i] != ' ':
+                            return False
+                elif end_row < start_row and end_col > start_col:
+                    for i in range(1, start_row - end_row):
+                        if self.board[start_row - i][start_col + i] != ' ':
+                            return False
+                elif end_row < start_row and end_col < start_col:
+                    for i in range(1, start_row - end_row):
+                        if self.board[start_row - i][start_col - i] != ' ':
+                            return False
+                # Verifica se a posição final está livre ou se há uma peça inimiga para capturar
+                if self.board[end_row][end_col] == ' ' or (piece.isupper() != self.board[end_row][end_col].isupper()):
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+        # Checa se o movimento é válido para a rainha branca ou preta
+        if piece == 'Q' or piece == 'q':
+            # Verifica se a peça está se movendo em linha reta ou na diagonal
+            if start_row == end_row or start_col == end_col or abs(start_row - end_row) == abs(start_col - end_col):
+                # Verifica se há outras peças no caminho
+                if start_row == end_row:
+                    if start_col < end_col:
+                        for col in range(start_col+1, end_col):
+                            if self.board[start_row][col] != ' ':
+                                return False
+                    else:
+                        for col in range(end_col+1, start_col):
+                            if self.board[start_row][col] != ' ':
+                                return False
+                elif start_col == end_col:
+                    if start_row < end_row:
+                        for row in range(start_row+1, end_row):
+                            if self.board[row][start_col] != ' ':
+                                return False
+                    else:
+                        for row in range(end_row+1, start_row):
+                            if self.board[row][start_col] != ' ':
+                                return False
+                elif abs(start_row - end_row) == abs(start_col - end_col):
+                    if end_row > start_row and end_col > start_col:
+                        for i in range(1, end_row - start_row):
+                            if self.board[start_row + i][start_col + i] != ' ':
+                                return False
+                    elif end_row > start_row and end_col < start_col:
+                        for i in range(1, end_row - start_row):
+                            if self.board[start_row + i][start_col - i] != ' ':
+                                return False
+                    elif end_row < start_row and end_col > start_col:
+                        for i in range(1, start_row - end_row):
+                            if self.board[start_row - i][start_col + i] != ' ':
+                                return False
+                    elif end_row < start_row and end_col < start_col:
+                        for i in range(1, start_row - end_row):
+                            if self.board[start_row - i][start_col - i] != ' ':
+                                return False
+                # Verifica se a posição final está livre ou se há uma peça inimiga para capturar
+                if self.board[end_row][end_col] == ' ' or (piece.isupper() != self.board[end_row][end_col].isupper()):
+                    return True
+                else:
+                    return False
+
+        # Checa se o movimento é válido para o cavalo branco ou preto
+        if piece == 'N' or piece == 'n':
+            # Verifica se a peça se move em L
+            if abs(start_row - end_row) == 2 and abs(start_col - end_col) == 1:
+                if self.board[end_row][end_col] == ' ' or (piece.isupper() != self.board[end_row][end_col].isupper()):
+                    return True
+                else:
+                    return False
+            elif abs(start_row - end_row) == 1 and abs(start_col - end_col) == 2:
+                if self.board[end_row][end_col] == ' ' or (piece.isupper() != self.board[end_row][end_col].isupper()):
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+        # Checa se o movimento é válido para o rei branco ou preto
+        if piece == 'K' or piece == 'k':
+            # Verifica se o rei se move apenas uma casa na horizontal ou vertical
+            if abs(start_row - end_row) <= 1 and abs(start_col - end_col) <= 1:
+                # Checa se a posição final está livre ou com uma peça inimiga
+                if self.board[end_row][end_col] == ' ' or (piece.isupper() and self.board[end_row][end_col].islower()) or (piece.islower() and self.board[end_row][end_col].isupper()):
+                    return True
+            # Caso não seja nenhum dos movimentos válidos, retorna False
+            else:
+                return False
 
     # Movimenta as peças
-    def make_move(self, move):
-    	pass
+    def make_move(board, move):
+        if len(move) != 3:
+            return
+        piece, start_pos, end_pos = move
+        start_col = board.line.index(start_pos[0])
+        start_row = 8 - int(start_pos[1])
+        end_col = board.line.index(end_pos[0])
+        end_row = 8 - int(end_pos[1])
+        board.board[end_row][end_col] = piece
+        board.board[start_row][start_col] = ' '
+        return board
     
     # Define fim de jogo
     def end_game(self):
