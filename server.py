@@ -1,5 +1,3 @@
-# server.py
-
 import socket
 import pickle
 import numpy as np

@@ -1,5 +1,3 @@
-# chess.py
-
 import numpy as np
 
 # Auxiliary lists
@@ -574,22 +572,3 @@ class Piece():
 				j += y
 				exist = board[i][j] != None
 			return True
-
-"""
-if __name__ == "__main__":
-	chess = Game()
-	chess.board.print_board()
-	
-	
-	while True:
-		move = input("Sua jogada - de para - (exemplo: e2 e4): ")		
-		print(list(move))
-		if len(list(move)) != 5:
-			print(f'7: Formato de entrada incorreto. Formato: e2 e4')
-		
-		move_from, move_to = chess.transform_input(move)	
-				
-		chess.move(move_from,move_to)
-		
-		chess.board.print_board()
-"""
